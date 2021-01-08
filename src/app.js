@@ -21,7 +21,7 @@ app.use(morgan(morganOption))
 app.use(helmet())
 app.use(cors())
 
-app.use('/articles', articlesRouter)
+app.use('/api/articles', articlesRouter)
 
 //route
 app.get('/', (req, res) => {
