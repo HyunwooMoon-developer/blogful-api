@@ -68,7 +68,8 @@ describe('Articles Endpoints', ()=>{
     
 })
     describe('POST /api/articles', ()=> {
-        it('creates an articles, responding with 201 and the new article', ()=> {
+        it('creates an articles, responding with 201 and the new article', function(){
+            this.retries(3);
             const newArticle = {
             title: 'test new article',
             style: 'Listicle',
