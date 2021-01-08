@@ -3,7 +3,7 @@
 const path = require('path');
 const xss = require('xss');
 const express = require('express');
-const ArticlesService = require('../article-service')
+const ArticlesService = require('./article-service')
 
 const articlesRouter = express.Router();
 const jsonParser = express.json();
