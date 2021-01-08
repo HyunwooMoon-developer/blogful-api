@@ -6,9 +6,9 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const {NODE_ENV} = require('./config');
-const ArticlesService = require('./article-service');
 const errorHandler = require('./errorHandler')
-const validateBearerToken = require('./validateBearerToken')
+const articlesRouter = require('./articles/articles-router')
+
 
 const app = express()
 //pipeline begins
@@ -21,34 +21,7 @@ app.use(morgan(morganOption))
 app.use(helmet())
 app.use(cors())
 
-app.get('/articles', (req, res, next) => {
-  const db = req.app.get('db')
-  ArticlesService.getAllArticles(db)
-  .then(articles => {
-    res.json(articles)
-  })
-  .catch(next)
-})
-
-app.get('/articles/:article_id', (req, res, next) => {
-  const db = req.app.get('db')
-    ArticlesService.getById(db, req.params.article_id)
-    .then(article => {
-      if(!article){
-        return res.status(404).json({
-          error: {message: `Article doesn't exist`}
-        })
-      }
-      res.json({
-        id: article.id,
-        title: article.title,
-        style: article.style,
-        content: article.content,
-        date_published: new Date(article.date_published),
-      })
-    })
-    .catch(next)
-})
+app.use('/articles', articlesRouter)
 
 //route
 app.get('/', (req, res) => {
@@ -56,6 +29,10 @@ app.get('/', (req, res) => {
 })
 //app.use(validateBearerToken);
 
+app.get('/xss', (req, res) => {
+  res.cookie('secretToken', '1234567890');
+  res.sendFile(__dirname + '/xss-example.html');
+});
 //error handler
 app.use(errorHandler);
 

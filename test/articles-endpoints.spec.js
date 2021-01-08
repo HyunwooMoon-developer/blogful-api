@@ -6,7 +6,7 @@ const supertest = require('supertest');
 const app = require('../src/app');
 const {makeArticlesArray} = require('./articles.fixtures')
 
-describe.only('Articles Endpoints', ()=>{
+describe('Articles Endpoints', ()=>{
     let db;
 
     before('make knex instance', () => {
@@ -33,7 +33,7 @@ describe.only('Articles Endpoints', ()=>{
         })
     })
 
-    describe(`GET /articles/:article_id`, ()=> {
+    describe(`GET /articles/:article_id`, () => {
         context(`Given no articles` , ()=> {
             it('responds with 404' , ()=> {
                 const articleId = 123456;
@@ -42,8 +42,8 @@ describe.only('Articles Endpoints', ()=>{
                     .expect(404, {error: {message: `Article doesn't exist`}})
             })
         })
-    })
-
+  
+    
     context('Given there are articles in the database', ()=>{
        const testArticles = makeArticlesArray()
 
@@ -65,5 +65,118 @@ describe.only('Articles Endpoints', ()=>{
                 .expect(200, expectedArticle)
         })
     })
+    
+})
+    describe('POST /articles', ()=> {
+        it('creates an articles, responding with 201 and the new article', ()=> {
+            const newArticle = {
+            title: 'test new article',
+            style: 'Listicle',
+            content: 'the new article content...',
+           }
+           
+            return supertest(app)
+                    .post('/articles')
+                    .send(newArticle)
+                    .expect(201)
+                  .expect(res => {
+                        expect(res.body.title).to.eql(newArticle.title)
+                        expect(res.body.style).to.eql(newArticle.style)
+                        expect(res.body.content).to.eql(newArticle.content)
+                        expect(res.body).to.have.property('id')
+                        expect(res.headers.location).to.eql(`/articles/${res.body.id}`)
+                        const expected = new Date().toLocaleString('en', {timeZone : 'America/Los_Angeles'})
+                        const actual = new Date(res.body.date_published).toLocaleString()
+                        expect(actual).to.eql(expected)
+                    })
+                    .then(postRes => 
+                        supertest(app)
+                        .get(`/articles/${postRes.body.id}`)
+                        .expect(postRes.body)
+                        )
+        })
+        /*it(`responds with 400 and an error message when the 'title' is missing`, ()=>{
+            return supertest(app)
+                .post('/articles')
+                .send({
+                    style: 'Listicle',
+                    content: 'test new article content...'
+                })
+                .expect(400, {
+                    error: {message : `Missing 'title' in request body`}
+                })
+        })
+        it(`responds with 400 and an error message when the 'content' is missing`, ()=>{
+            return supertest(app)
+                .post('/articles')
+                .send({
+                    style: 'Listicle',
+                    title: 'test new article title...'
+                })
+                .expect(400, {
+                    error: {message : `Missing 'content' in request body`}
+                })
+        })
+        it(`responds with 400 and an error message when the 'style' is missing`,()=>{
+            return supertest(app)
+                .post('/articles')
+                .send({
+                    title: 'test title',
+                    content : 'test content'
+                })
+                .expect(400, {
+                    error: {message : `Missing 'style' in request body`}
+                })
+        })*/
+        const requiredFields = ['title', 'style', 'content'];
 
+        requiredFields.forEach(field => {
+            const newArticle = {
+                title: 'test new article',
+                style: 'Listicle',
+                content:'test new content',
+            }
+            it(`responds with 400 and an error message when the '${field}' is missing`,()=>{
+                delete newArticle[field]
+
+                return supertest(app)
+                    .post('/articles')
+                    .send(newArticle)
+                    .expect(400, {
+                        error: {message : `Missing '${field}' in request body`}
+                    })
+            })
+        })
+    })
+    describe(`DELETE /articles/:article_id` , ()=> {
+        context('given no article', ()=> {
+            it('responds with 404', ()=> {
+                const articleId = 123456;
+                return supertest(app)
+                    .delete(`/articles/${articleId}`)
+                    .expect(404, {error: {message: `Article doesn't exist`}})
+            })
+        })
+        context('given there are articles in the database', ()=> {
+            const testArticles = makeArticlesArray();
+
+            beforeEach('insert articles', ()=>{
+                return db
+                    .into('blogful_articles')
+                    .insert(testArticles)
+            })
+            it('responds with 204 and removes the article', () => {
+                  const idToRemove = 2
+                  const expectedArticles = testArticles.filter(article => article.id !== idToRemove)
+                  return supertest(app)
+                    .delete(`/articles/${idToRemove}`)
+                    .expect(204)
+                    .then(res =>
+                      supertest(app)
+                        .get(`/articles`)
+                        .expect(expectedArticles)
+            )
+        })
+    })
+    })
 })
