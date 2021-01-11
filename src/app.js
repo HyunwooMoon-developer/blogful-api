@@ -9,6 +9,8 @@ const {NODE_ENV} = require('./config');
 const errorHandler = require('./errorHandler')
 const articlesRouter = require('./articles/articles-router')
 const usersRouter = require('./users/user-router')
+const CommentsService = require('./comments/comments-service')
+const commentsRouter = require('./comments/comments-router')
 
 
 const app = express()
@@ -23,7 +25,8 @@ app.use(helmet())
 app.use(cors())
 
 app.use('/api/articles', articlesRouter)
-app.use('/api/users', usersRouter);
+app.use('/api/users', usersRouter)
+app.use('/api/comments', commentsRouter)
 
 //route
 app.get('/', (req, res) => {
