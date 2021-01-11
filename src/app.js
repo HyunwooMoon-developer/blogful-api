@@ -8,6 +8,7 @@ const helmet = require('helmet')
 const {NODE_ENV} = require('./config');
 const errorHandler = require('./errorHandler')
 const articlesRouter = require('./articles/articles-router')
+const usersRouter = require('./users/user-router')
 
 
 const app = express()
@@ -22,6 +23,7 @@ app.use(helmet())
 app.use(cors())
 
 app.use('/api/articles', articlesRouter)
+app.use('/api/users', usersRouter);
 
 //route
 app.get('/', (req, res) => {
