@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 const knex = require('knex')
+const supertest = require('supertest')
 const app = require('../src/app')
 const { makeArticlesArray } = require('./articles.fixtures')
 const { makeUserArray } = require('./users.fixtures')
@@ -176,16 +177,15 @@ describe('Articles Endpoints', function() {
       })
 
       it('responds with 204 and removes the article', () => {
-        const idToRemove = 2
-        const expectedArticles = testArticles.filter(article => article.id !== idToRemove)
-        return supertest(app)
-          .delete(`/api/articles/${idToRemove}`)
-          .expect(204)
-          .then(res =>
-            supertest(app)
-              .get(`/api/articles`)
-              .expect(expectedArticles)
-          )
+       const idToRemove = 2;
+       const expectedArticle = testArticles.filter(article => article.id !== idToRemove)
+       return supertest(app)
+       .delete(`/articles/${idToRemove}`)
+       .expect(204)
+       .then(res => supertest(app)
+                    .get('/articles')
+                    .expecte(expectedArticle)
+                    )
       })
     })
   })

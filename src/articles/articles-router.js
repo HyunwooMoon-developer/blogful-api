@@ -83,7 +83,7 @@ articlesRouter
             res.json(serializeArticle(res.article))
         })
         .delete((req, res, next) => {
-            ArticlesService.deleteArticsle(
+            ArticlesService.deleteArticle(
                 req.app.get('dbs'),
                 req.params.article_id
             )
