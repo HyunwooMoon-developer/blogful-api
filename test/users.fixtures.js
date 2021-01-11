@@ -1,21 +1,22 @@
+/* eslint-disable no-undef */
 function makeUserArray(){
     return [
         {
             id: 1,
-            date_created : '2020-01019T22:17:30.615Z',
-            fullname: 'Moon Moon',
-            username: 'moon@gmail.com',
+            date_created: '2029-01-22T16:28:32.615Z',
+            fullname: 'Sam Gamgee',
+            username: 'sam.gamgee@shire.com',
             password: 'secret',
-            nickname : 'moon'
-        },
-        {
-            id:2,
-            date_created : '2020-01019T22:17:30.615Z',
-            fullname : 'hyun moon',
-            username: 'hyun@gmail.com',
-            password : 'secret',
-            nickname : 'hyun',
-        }
+            nickname: 'Sam'
+          },
+          {
+            id: 2,
+            date_created: '2100-05-22T16:28:32.615Z',
+            fullname: 'Peregrin Took',
+            username: 'peregrin.took@shire.com',
+            password: 'secret',
+            nickname: 'Pippin'
+          }
     ]
 }
 
